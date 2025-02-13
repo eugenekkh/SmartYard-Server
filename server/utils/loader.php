@@ -99,26 +99,35 @@
     /**
      * Loads configuration from JSON or YAML files.
      *
-     * @return array|false The configuration array, or false if the configuration files are not found or invalid.
+     * @return array The configuration array, or false if the configuration files are not found or invalid.
+     * @throws Exception
      */
-    function loadConfiguration()
+    function loadConfiguration(): array
     {
         try {
-            $config = false;
-
             $jsonConfigPath = __DIR__ . "/../config/config.json";
 
-            if (file_exists($jsonConfigPath)) {
-                $config = json_decode(file_get_contents($jsonConfigPath), true);
+            if (!file_exists($jsonConfigPath)) {
+                throw new Exception("Config file '$jsonConfigPath' not found");
             }
 
-            if (!$config) {
-                throw new Exception('Configuration files not found or invalid');
+            if (function_exists("json5_decode")) {
+                $config = @json5_decode(file_get_contents("config/config.json"), true);
+            } else {
+                $config = @json_decode(file_get_contents("config/config.json"), true, 512, JSON_THROW_ON_ERROR);
+            }
+
+            if (!is_array($config)) {
+                throw new Exception('Configuration file invalid');
+            }
+
+            if (!isset($config['backends'])) {
+                throw new Exception('Configuration file invalid (backends not found)');
             }
 
             return $config;
         } catch (Exception $e) {
             error_log($e->getMessage(), 0);
-            return $e;
+            throw $e;
         }
     }

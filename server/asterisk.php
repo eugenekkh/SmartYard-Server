@@ -22,18 +22,9 @@
     header('Content-Type: application/json');
 
     try {
-        $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
-    } catch (Exception $e) {
-        $config = false;
-    }
-
-    if (!$config) {
-        echo "config is empty\n";
-        exit(1);
-    }
-
-    if (@!$config["backends"]) {
-        echo "no backends defined\n";
+        $config = loadConfiguration();
+    } catch (\Exception $e) {
+        echo $e->getMessage() . "\n";
         exit(1);
     }
 

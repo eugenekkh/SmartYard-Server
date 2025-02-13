@@ -376,28 +376,11 @@
         die("can't determine php version\n\n");
     }
 
-    if (function_exists("json5_decode")) {
-        try {
-            $config = @json5_decode(file_get_contents("config/config.json"), true);
-        } catch (\Exception $e) {
-            echo $e->getMessage() . "\n";
-            $config = false;
-        }
-    } else {
-        try {
-            $config = @json_decode(file_get_contents("config/config.json"), true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Exception $e) {
-            echo $e->getMessage() . "\n";
-            $config = false;
-        }
-    }
-
-    if (!$config) {
-        die("config is empty\n\n");
-    }
-
-    if (@!$config["backends"]) {
-        die("no backends defined\n\n");
+    try {
+        $config = loadConfiguration();
+    } catch (\Exception $e) {
+        echo $e->getMessage() . "\n";
+        die("bad config\n\n");
     }
 
     try {

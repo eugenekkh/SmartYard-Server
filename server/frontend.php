@@ -67,22 +67,10 @@
     }
 
     try {
-        $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
-    } catch (Exception $e) {
-        $config = false;
-    }
-
-    if (!$config) {
-        error_log("noConfig");
+        $config = loadConfiguration();
+    } catch (\Exception $e) {
         response(555, [
-            "error" => "noConfig",
-        ]);
-    }
-
-    if (@!$config["backends"]) {
-        error_log("noBackends");
-        response(555, [
-            "error" => "noBackends",
+            "error" => "badConfig",
         ]);
     }
 

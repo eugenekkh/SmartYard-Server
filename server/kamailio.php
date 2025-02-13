@@ -21,9 +21,6 @@
     // get global configuration
     try {
         $config = loadConfiguration();
-        if ($config instanceof \Exception){
-            throw new \Exception ($config->getMessage());
-        }
     } catch (\Exception $err) {
         response(555, false, false, $err->getMessage());
         exit(1);
